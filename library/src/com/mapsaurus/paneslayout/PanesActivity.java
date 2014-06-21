@@ -1,6 +1,5 @@
 package com.mapsaurus.paneslayout;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +11,8 @@ import com.mapsaurus.paneslayout.PanesSizer.PaneSizer;
 public abstract class PanesActivity extends SherlockFragmentActivity implements FragmentLauncher{
 
 	private ActivityDelegate mDelegate;
+	
+	private static String WORKAROUND_CCS_TABLET_MODEL = "TWD_MID";
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -28,7 +29,9 @@ public abstract class PanesActivity extends SherlockFragmentActivity implements 
 				& Configuration.SCREENLAYOUT_SIZE_MASK);
 
 		if (screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-				screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+				screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
+				android.os.Build.MODEL.equals(WORKAROUND_CCS_TABLET_MODEL)) {
+			
 			mDelegate = new TabletDelegate(this);
 		} else {
 			mDelegate = new PhoneDelegate(this);
@@ -147,5 +150,9 @@ public abstract class PanesActivity extends SherlockFragmentActivity implements 
 	public void setPaneSizer(PaneSizer sizer) {
 		if (mDelegate instanceof TabletDelegate)
 			((TabletDelegate) mDelegate).setPaneSizer(sizer);
+	}
+	
+	public String getDelegateClassName() {
+		return mDelegate.getClass().getName();
 	}
 }
